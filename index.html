@@ -28,12 +28,6 @@ body {
   font-weight:bold;
 }
 
-/* Кнопка по центру, но не нажимается */
-#startBtn:disabled {
-  opacity:0.6;
-  cursor:not-allowed;
-}
-
 #console {
   display:none;
   width:90%;
@@ -50,7 +44,7 @@ body {
 </head>
 <body>
 
-<button id="startBtn" startBth>▶ START</button>
+<button id="startBtn">▶️ START</button>
 <div id="console"></div>
 
 <audio id="music" src="music.mp3"></audio>
@@ -74,6 +68,7 @@ EXECUTING PAYMENT ✅
 
 let i = 0;
 const speed = 40;
+let payPlayed = false; // флаг чтобы звук оплаты был один раз
 
 // START запускает музыку и печатает код
 startBtn.addEventListener("click", () => {
@@ -83,20 +78,36 @@ startBtn.addEventListener("click", () => {
   typeWriter();
 });
 
-function playPay() {
-  pay.currentTime = 0;
-  pay.play().catch(()=>{});
-}
-
 function typeWriter() {
   if (i < text.length) {
     consoleBox.innerText = text.slice(0, i+1) + "█";
-    if (consoleBox.innerText.includes("EXECUTING PAYMENT")) playPay();
+
+    // 👇 Воспроизводим звук оплаты один раз и останавливаем музыку
+    if (consoleBox.innerText.includes("EXECUTING PAYMENT") && !payPlayed) {
+      payPlayed = true;
+
+      // останавливаем музыку и начинаем заново после оплаты
+      music.pause();
+      music.currentTime = 0;
+
+      pay.currentTime = 0;
+      pay.play().catch(()=>{});
+
+      pay.onended = () => {
+        music.play().catch(()=>{});
+      }
+    }
+
     i++;
     setTimeout(typeWriter, speed);
   } else {
     consoleBox.innerText = text;
-    playPay();
+    // финальное проигрывание оплаты + музыка
+    pay.currentTime = 0;
+    pay.play().catch(()=>{});
+    pay.onended = () => {
+      music.play().catch(()=>{});
+    }
   }
 }
 
@@ -108,4 +119,3 @@ if (window.Telegram?.WebApp) {
 </script>
 </body>
 </html>
-
