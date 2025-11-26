@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>🎂 С Днём Рождения, Программист!</title>
+<style>
+body {
+  background:#0d1117;
+  color:#c9d1d9;
+  font-family:monospace;
+  white-space:pre-line;
+  margin:0;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  padding:0 16px;
+}
+#startBtn {
+  background:#238636;
+  border:none;
+  padding:14px 32px;
+  color:white;
+  font-size:22px;
+  cursor:pointer;
+  border-radius:10px;
+  font-weight:bold;
+  margin-bottom:24px;
+}
+#code {
+  width:100%;
+  max-width:600px;
+  height:60vh;
+  background:#161b22;
+  border:1px solid #30363d;
+  border-radius:8px;
+  padding:16px;
+  overflow:auto;
+  display:none;
+}
+</style>
+</head>
+
+<button id="startBtn">▶ START</button>
+<div id="code"></div>
+
+<!-- Реальные звуки -->
+<audio id="keySound" src="https://assets.mixkit.co/active_storage/sfx/2997/2997-preview.mp3"></audio>
+<audio id="dingSound" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
+
+<script>
+const key = document.getElementById("keySound");
+const ding = document.getElementById("dingSound");
+key.volume = 0.35;
+ding.volume = 0.55;
+
+// ✅ Переписали: 2 имени
+const birthdayBoy = "Дима";     // именинник
+const sender = "Данил";         // поздравитель
+
+const text = `
+// --------------------------------------------------
+ // 🎂 С Днём Рождения, ${birthdayBoy}!
+ // Открыт безотзывный кредитив от отправителя: ${sender}
+ // --------------------------------------------------
+
+ const name = "${birthdayBoy}";
+ const from = "${sender}";
+
+ function openCreditiv(holder) {
+     return {
+         type: "безотзывный",
+         limit: "365 дней без багов 🧑‍💻",
+         commission: "0%",
+         execute: () => console.log("Платёж счастья исполнен ✅")
+     };
+ }
+
+ const creditiv = openCreditiv(name);
+ creditiv.execute();
+ console.log("🎁 ${birthdayBoy}, твой баланс счастья пополнен!");
+ console.log("С уважением и акцентом от ${sender} 😎");
+ // Баги только в коде — не в жизни 💚
+`;
+
+let i = 0;
+const speed = 45;
+const box = document.getElementById("code");
+
+// Разблокировка звука + старт печати
+startBtn.addEventListener("click", () => {
+  document.getElementById("startBtn").style.display = "none";
+  box.style.display = "block";
+  type();
+});
+
+function playKey() {
+  key.currentTime = 0;
+  key.play().catch(()=>{});
+}
+function playDing() {
+  ding.currentTime = 0;
+  ding.play().catch(()=>{});
+}
+
+function type() {
+  if (i < text.length) {
+     box.innerText = text.slice(0, i+1) + "█";
+     if (i % 2 === 0) playKey();
+     if (text.slice(0, i).includes("Платёж счастья исполнен")) playDing();
+     i++;
+     setTimeout(type, speed);
+  } else {
+     box.innerText = text;
+     playDing();
+  }
+}
+</script>
+</html>
